@@ -1,0 +1,59 @@
+; Allowed function
+; cons first rest empty? empty lambda cond
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define my-foldr
+  (lambda (EX base lst)
+    (((lambda (x) (x x))
+      (lambda (do)
+        (lambda (val)
+          (cond [(empty? val) base]
+                [else (EX (first val) ((do do) (rest val)))]))))
+     lst)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define my-map
+  (lambda (EX lst)
+    (((lambda (x) (x x))
+      (lambda (do)
+        (lambda (val)
+          (cond [(empty? val) empty]
+                [else (cons (EX (first val)) ((do do) (rest val)))])))) lst)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define my-append
+  (lambda (lst1 lst2)
+    ((lambda (EX base lst)
+       (((lambda (x) (x x))
+         (lambda (do)
+           (lambda (val)
+             (cond [(empty? val) base]
+                   [else (EX (first val) ((do do) (rest val)))]))))
+        lst))
+     (lambda (x y) (cons x y)) lst1 lst2)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define (subsets3 lst)
+  (((lambda (x) (x x))
+    (lambda (do)
+      (lambda (val)
+        (cond [(empty? val) (cons empty empty)]
+              [else ((lambda (m n)
+                       ((lambda (lst1 lst2)
+                          ((lambda (EX base lst)
+                             (((lambda (x) (x x))
+                               (lambda (do)
+                                 (lambda (val)
+                                   (cond [(empty? val) base]
+                                         [else (EX (first val) ((do do) (rest val)))]))))
+                              lst))
+                           (lambda (x y) (cons x y)) lst1 lst2))
+                        y
+                        ((lambda (EX lst)
+                           (((lambda (x) (x x))
+                             (lambda (do)
+                               (lambda (val)
+                                 (cond [(empty? val) empty]
+                                       [else (cons (EX (first val))
+                                                   ((do do) (rest val)))])))) lst)) (lambda (z) (cons x z)) y)))
+                     (first val) ((do do) (rest val)))]))))
+   lst))
+
+
+
